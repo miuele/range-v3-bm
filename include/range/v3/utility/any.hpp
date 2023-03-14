@@ -33,6 +33,7 @@ RANGES_DIAGNOSTIC_IGNORE_DEPRECATED_DECLARATIONS
 
 namespace ranges
 {
+
     struct bad_any_cast : std::bad_cast
     {
         virtual const char * what() const noexcept override
@@ -40,6 +41,15 @@ namespace ranges
             return "bad any_cast";
         }
     };
+
+	inline void throw_bad_any_cast()
+	{
+#ifdef __cpp_exceptions
+		throw bad_any_cast();
+#else
+		abort();
+#endif
+	}
 
     struct RANGES_DEPRECATED(
         "ranges::any will be going away in the not-too-distant future. "
@@ -192,7 +202,7 @@ namespace ranges
     meta::if_c<std::is_reference<T>() || copyable<T>, T> any_cast(any & x)
     {
         if(x.type() != typeid(detail::decay_t<T>))
-            throw bad_any_cast{};
+            throw_bad_any_cast();
         return static_cast<_any_::impl<detail::decay_t<T>> *>(x.ptr_.get())->get();
     }
 
@@ -201,7 +211,7 @@ namespace ranges
     meta::if_c<std::is_reference<T>() || copyable<T>, T> any_cast(any const & x)
     {
         if(x.type() != typeid(detail::decay_t<T>))
-            throw bad_any_cast{};
+            throw_bad_any_cast();
         return static_cast<_any_::impl<detail::decay_t<T>> const *>(x.ptr_.get())->get();
     }
 
@@ -210,7 +220,7 @@ namespace ranges
     meta::if_c<std::is_reference<T>() || copyable<T>, T> any_cast(any && x)
     {
         if(x.type() != typeid(detail::decay_t<T>))
-            throw bad_any_cast{};
+            throw_bad_any_cast();
         return static_cast<_any_::impl<detail::decay_t<T>> *>(x.ptr_.get())->get();
     }
 

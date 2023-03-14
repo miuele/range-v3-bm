@@ -66,6 +66,16 @@ namespace ranges
         {}
     };
 
+	[[noreturn]]
+	inline void throw_bad_variant_access(const char *msg)
+	{
+#ifdef __cpp_exceptions
+		throw bad_variant_access(msg);
+#else
+		abort();
+#endif
+	}
+
     template<typename T, std::size_t Index>
     struct indexed_element
     {
@@ -452,7 +462,7 @@ namespace ranges
             template<typename U, std::size_t M>
             [[noreturn]] meta::if_c<M != N> operator()(indexed_element<U, M>) const
             {
-                throw bad_variant_access("bad variant access");
+                throw_bad_variant_access("bad variant access");
             }
             template<typename U>
             void operator()(indexed_element<U, N> t) const noexcept

@@ -16,7 +16,9 @@
 #define RANGES_V3_VIEW_ANY_VIEW_HPP
 
 #include <type_traits>
+#if __cpp_rtti
 #include <typeinfo>
+#endif
 #include <utility>
 
 #include <range/v3/range_fwd.hpp>
@@ -125,21 +127,27 @@ namespace ranges
             template<typename T>
             constexpr any_ref(T & obj) noexcept
               : obj_(detail::addressof(obj))
+#ifdef __cpp_rtti
 #ifndef NDEBUG
               , info_(&typeid(rtti_tag<T>))
+#endif
 #endif
             {}
             template<typename T>
             T & get() const noexcept
             {
+#ifdef __cpp_rtti
                 RANGES_ASSERT(obj_ && info_ && *info_ == typeid(rtti_tag<T>));
+#endif
                 return *const_cast<T *>(static_cast<T const volatile *>(obj_));
             }
 
         private:
             void const volatile * obj_ = nullptr;
+#ifdef __cpp_rtti
 #ifndef NDEBUG
             std::type_info const * info_ = nullptr;
+#endif
 #endif
         };
 

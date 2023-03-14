@@ -29,6 +29,16 @@
 
 namespace ranges
 {
+	[[noreturn]]
+	inline void throw_out_of_range(const char *msg)
+	{
+#ifdef __cpp_exceptions
+		throw std::out_of_range(msg);
+#else
+		abort();
+#endif
+	}
+
     /// Checked indexed range access.
     ///
     /// \ingroup group-range
@@ -50,7 +60,7 @@ namespace ranges
         template<typename Rng>
         static constexpr void check_throw(Rng && rng, range_difference_t<Rng> n)
         {
-            (n < 0 || n >= ranges::distance(rng)) ? throw std::out_of_range("ranges::at")
+            (n < 0 || n >= ranges::distance(rng)) ? throw_out_of_range("ranges::at")
                                                   : void(0);
         }
     };

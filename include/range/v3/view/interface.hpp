@@ -311,7 +311,7 @@ namespace ranges
             using size_type = range_size_t<Derived>;
             if(n < 0 || size_type(n) >= ranges::size(derived()))
             {
-                throw std::out_of_range("view_interface::at");
+                throw_out_of_range("view_interface::at");
             }
             return derived().begin()[n];
         }
@@ -324,7 +324,7 @@ namespace ranges
             using size_type = range_size_t<Derived const>;
             if(n < 0 || size_type(n) >= ranges::size(derived()))
             {
-                throw std::out_of_range("view_interface::at");
+                throw_out_of_range("view_interface::at");
             }
             return derived().begin()[n];
         }
